@@ -12,13 +12,17 @@ const LoginPage = () => {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 
-    
+    const setToken = useTokenStore((state) => state.setToken);
 
     // to send data to server we use mutation
     const mutation = useMutation({
       mutationFn: login,
-      onSuccess: () =>{
+      onSuccess: (response) =>{
         console.log('login success');
+        //before login we will need to store token also
+
+        setToken(response.data.token);
+
         //here after a successful login we redirect to home page
         //in router dom we have a hook called useNavigate
         navigate('/dashboard/home');
