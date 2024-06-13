@@ -30,12 +30,18 @@ import useTokenStore from "@/store"
 const DashboardLayouts = () => {
 
   const Token = useTokenStore(state => state.token)
+  const settoken = useTokenStore(state => state.setToken);
   if(!Token){
     return  <Navigate to={'/auth/login'} replace/>
     // je apne kol token heni mtlab we are not logged in so we cant go to the dashboard by just writing dashboard as url 
     //and we have used replace so that once logged in by pressing back key we dont go back to login page so we prevent it using replace word
     //(second comment is implemented in authlayout)
   }
+  
+  const Logout = () => { 
+    settoken("");
+  }
+
   return (
     <div>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
@@ -165,7 +171,7 @@ const DashboardLayouts = () => {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem><Button variant={'link'} onClick={Logout}>Logout</Button></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
