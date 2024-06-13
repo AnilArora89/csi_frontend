@@ -12,6 +12,8 @@ const LoginPage = () => {
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
 
+    
+
     // to send data to server we use mutation
     const mutation = useMutation({
       mutationFn: login,
@@ -46,11 +48,12 @@ const LoginPage = () => {
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account
+                        Enter your email below to login to your account <br/>
+                        {mutation.isError && <span className='text-red-500 text-small'>{mutation.error.message}</span>}
                     </CardDescription>
 
 
-                </CardHeader>
+                </CardHeader> 
                 <CardContent className="grid gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
