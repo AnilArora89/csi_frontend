@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import {useMutation } from '@tanstack/react-query'
 import { login } from '@/http/api'
 import { Loader } from 'lucide-react'
+import useTokenStore from '@/store'
 const LoginPage = () => {
     const navigate = useNavigate();
     const emailRef = useRef<HTMLInputElement>(null);

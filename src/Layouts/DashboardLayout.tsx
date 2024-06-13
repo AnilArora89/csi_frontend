@@ -24,9 +24,18 @@ import {
   } from "@/components/ui/dropdown-menu"
   import { Input } from "@/components/ui/input"
   import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-  import { Link, Outlet } from "react-router-dom"
+  import { Link,Navigate, Outlet } from "react-router-dom"
+import useTokenStore from "@/store"
   
 const DashboardLayouts = () => {
+
+  const Token = useTokenStore(state => state.token)
+  if(!Token){
+    return  <Navigate to={'/auth/login'} replace/>
+    // je apne kol token heni mtlab we are not logged in so we cant go to the dashboard by just writing dashboard as url 
+    //and we have used replace so that once logged in by pressing back key we dont go back to login page so we prevent it using replace word
+    //(second comment is implemented in authlayout)
+  }
   return (
     <div>
       <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
