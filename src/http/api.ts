@@ -2,7 +2,7 @@ import axios from "axios";
 // make api
 const api = axios.create({
     // we will bring this value from env variables
-    baseURL: "http://localhost:3000",
+    baseURL: "http://127.0.0.1:5513/",
     headers: {
         'Content-Type': 'application/json'
     },
