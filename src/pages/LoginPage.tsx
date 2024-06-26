@@ -29,7 +29,7 @@ const LoginPage = () => {
       console.log("login success");
       //before login we will need to store token also
 
-      setToken(response.data.token);
+      setToken(response.data.accessToken);
 
       //here after a successful login we redirect to home page
       //in router dom we have a hook called useNavigate
@@ -41,7 +41,7 @@ const LoginPage = () => {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
 
-    console.log("data", { email, password });
+    //console.log("data", { email, password });
 
     if (!email || !password) {
       return alert("Please enter email and password");
