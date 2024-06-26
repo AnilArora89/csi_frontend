@@ -39,6 +39,7 @@ const DashboardLayouts = () => {
   }
   
   const Logout = () => { 
+    console.log('logged out');
     settoken("");
   }
 
