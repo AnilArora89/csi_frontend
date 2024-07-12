@@ -1,3 +1,5 @@
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -27,7 +29,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "react-hook-form";
-import { createBook } from "@/http/api";
+import { createAgency } from "@/http/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -68,17 +70,18 @@ const CreateBook = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationFn: createBook,
+    mutationFn: createAgency,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["books"] });
-      console.log("Book created successfully");
-      navigate("/dashboard/books");
+      queryClient.invalidateQueries({ queryKey: ["agency"] });
+      toast.success("Agency created successfully"); // Toast notification
+      navigate("/dashboard/agency");
+    },
+    onError: (error) => {
+      toast.error(`Failed to create agency: ${error.message}`); // Toast notification on error
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
     const formdata = new FormData();
     formdata.append("title", values.title);
     formdata.append("genre", values.genre);
@@ -87,12 +90,11 @@ const CreateBook = () => {
     formdata.append("file", values.file[0]);
 
     mutation.mutate(formdata);
-
-    console.log(values);
   }
 
   return (
     <section>
+      <ToastContainer /> {/* Toast container */}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex items-center justify-between">
@@ -112,8 +114,11 @@ const CreateBook = () => {
               </BreadcrumbList>
             </Breadcrumb>
             <div className="flex items-center gap-4">
-              <Link to="/dashboard/books">
-                <Button variant={"outline"}>
+              <Link to="/dashboard/agency">
+                <Button
+                  variant={"outline"}
+                  onClick={() => toast.info("Cancelled")}
+                >
                   <span className="ml-2">Cancel</span>
                 </Button>
               </Link>

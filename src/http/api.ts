@@ -27,11 +27,21 @@ export const register = async (data: { name: string, email: string, password: st
 }
 
 
-export const getBooks = async () => api.get('/api/books');
+export const getAgency = async () => api.get('/api/agency');
 
-export const createBook = async (data: FormData) =>
-    api.post('/api/books', data, {
+export const createAgency = async (data: FormData) =>
+    api.post('/api/agency', data, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
     });
+
+export const deleteAgency = async (id: string) => {
+    try {
+        const response = await api.delete(`/api/agency/${id}`);
+        return response.data; // Adjust this based on your response structure
+    } catch (error) {
+        console.error('Error deleting book:', error || "OK");
+        throw new Error('Failed to delete book');
+    }
+};

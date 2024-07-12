@@ -1,21 +1,6 @@
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +8,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -30,24 +16,57 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getBooks } from "@/http/api";
-import { Book } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { deleteAgency, getAgency } from "@/http/api";
+import { Agency } from "@/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CirclePlus, MoreHorizontal } from "lucide-react";
 import { Link } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
-const BooksPage = () => {
-  // todo: add loading spinner, and error message
+const AgencyPage = () => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: deleteAgency,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["Agency"] });
+      console.log("Agency deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Error deleting Agency:", error.message);
+    },
+  });
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ["books"],
-    queryFn: getBooks,
+    queryKey: ["Agency"],
+    queryFn: getAgency,
     staleTime: 10000, // in milliseconds
   });
+
+  const [search, setSearch] = useState("");
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading data</div>;
 
+  const filteredAgency = data?.data.filter((agency: Agency) =>
+    agency.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  console.log(filteredAgency);
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -58,50 +77,57 @@ const BooksPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Books</BreadcrumbPage>
+              <BreadcrumbPage>Agency</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Link to="/dashboard/books/create">
+        <Link to="/dashboard/Agency/create">
           <Button>
             <CirclePlus size={20} />
-            <span className="ml-2">Add book</span>
+            <span className="ml-2">Add Agency</span>
           </Button>
         </Link>
       </div>
-
+      <div className="mt-4">
+        <Input
+          type="search"
+          placeholder="Search Agency..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full md:w-1/2"
+        />
+      </div>
       <Card className="mt-6">
         <CardHeader>
-          <CardTitle>Books</CardTitle>
+          <CardTitle>Agency</CardTitle>
           <CardDescription>
-            Manage your books and view their sales performance.
+            Manage your Agency and view their sales performance.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader></TableHeader>
             <TableBody>
-              {data?.data.map((book: Book) => (
-                <TableRow key={book._id}>
+              {filteredAgency?.map((agency: Agency) => (
+                <TableRow key={agency._id}>
                   <TableCell className="hidden sm:table-cell">
                     <img
-                      alt={book.title}
+                      alt={agency.title}
                       className="aspect-square rounded-md object-cover"
                       height="64"
-                      src={book.coverImage}
+                      src={agency.coverImage}
                       width="64"
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{book.title}</TableCell>
+                  <TableCell className="font-medium">{agency.title}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{book.genre}</Badge>
+                    <Badge variant="outline">{agency.genre}</Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {" "}
                     {/* author name */}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {book.createdAt}
+                    {agency.createdAt}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -118,7 +144,11 @@ const BooksPage = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => mutation.mutate(agency._id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -129,7 +159,8 @@ const BooksPage = () => {
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Showing <strong>1-10</strong> of <strong>32</strong> products
+            Showing <strong>{filteredAgency?.length}</strong> of{" "}
+            <strong>{data?.data.length}</strong> Agency
           </div>
         </CardFooter>
       </Card>
@@ -137,4 +168,4 @@ const BooksPage = () => {
   );
 };
 
-export default BooksPage;
+export default AgencyPage;

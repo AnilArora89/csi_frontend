@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -8,23 +7,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import useTokenStore from "@/store";
-import {
-  Bell,
-  CircleUser,
-  Home,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
-  Search,
-  ShoppingCart,
-  Users,
-} from "lucide-react";
+import { Bell, CircleUser, Home, Menu, Package, Package2 } from "lucide-react";
 import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
-
+import logoImageUrl from "../assets/dd.jpg";
 const DashboardLayout = () => {
   const { token, setToken } = useTokenStore((state) => state);
 
@@ -66,7 +53,7 @@ const DashboardLayout = () => {
               </NavLink>
 
               <NavLink
-                to="/dashboard/books"
+                to="/dashboard/agency"
                 className={({ isActive }) => {
                   return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
                     isActive && "bg-muted"
@@ -74,7 +61,7 @@ const DashboardLayout = () => {
                 }}
               >
                 <Package className="h-4 w-4" />
-                Books{" "}
+                Agency{" "}
               </NavLink>
             </nav>
           </div>
@@ -94,66 +81,35 @@ const DashboardLayout = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
-                <Link
-                  to="#"
-                  className="flex items-center gap-2 text-lg font-semibold"
+              <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+                <NavLink
+                  to="/dashboard/home"
+                  className={({ isActive }) => {
+                    return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                      isActive && "bg-muted"
+                    }`;
+                  }}
                 >
-                  <Package2 className="h-6 w-6" />
-                  <span className="sr-only">Acme Inc</span>
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
+                  <Home className="h-4 w-4" />
+                  Home
+                </NavLink>
+
+                <NavLink
+                  to="/dashboard/agencies"
+                  className={({ isActive }) => {
+                    return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                      isActive && "bg-muted"
+                    }`;
+                  }}
                 >
-                  <Home className="h-5 w-5" />
-                  Dashboard
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl bg-muted px-3 py-2 text-foreground hover:text-foreground"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
-                  <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                    6
-                  </Badge>
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Package className="h-5 w-5" />
-                  Products
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Users className="h-5 w-5" />
-                  Customers
-                </Link>
-                <Link
-                  to="#"
-                  className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
-                >
-                  <LineChart className="h-5 w-5" />
-                  Analytics
-                </Link>
+                  <Package className="h-4 w-4" />
+                  Agency{" "}
+                </NavLink>
               </nav>
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
-            <form>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder="Search products..."
-                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
-                />
-              </div>
-            </form>
+            <img src={logoImageUrl} alt="CSI Logo" className="h-8 w-auto" />
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -165,8 +121,8 @@ const DashboardLayout = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              {/* <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem>Support</DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Button onClick={logout} variant={"link"}>

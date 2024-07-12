@@ -1,14 +1,9 @@
-export interface Author {
-    _id: string;
-    name: string;
-}
-
-export interface Book {
+export interface Agency {
     _id: string;
     title: string;
     description: string;
     genre: string;
-    author: Author;
+    authorname: string;
     coverImage: string;
     file: string;
     createdAt: string;
