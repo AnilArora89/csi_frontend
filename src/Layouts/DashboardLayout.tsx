@@ -1,57 +1,50 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
-    Bell,
-    CircleUser,
-    Home,
-    LineChart,
-    Menu,
-    Package,
-    Package2,
-    Search,
-    ShoppingCart,
-    Users,
-  } from "lucide-react"
-  
-  import { Badge } from "@/components/ui/badge"
-  import { Button } from "@/components/ui/button"
-  
-  import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-  import { Input } from "@/components/ui/input"
-  import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-  import { Link,Navigate, Outlet } from "react-router-dom"
-import useTokenStore from "@/store"
-  
-const DashboardLayouts = () => {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import useTokenStore from "@/store";
+import {
+  Bell,
+  CircleUser,
+  Home,
+  LineChart,
+  Menu,
+  Package,
+  Package2,
+  Search,
+  ShoppingCart,
+  Users,
+} from "lucide-react";
+import { Link, Navigate, NavLink, Outlet } from "react-router-dom";
 
-  const Token = useTokenStore(state => state.token)
-  const settoken = useTokenStore(state => state.setToken);
-  if(!Token){
-    return  <Navigate to={'/auth/login'} replace/>
-    // je apne kol token heni mtlab we are not logged in so we cant go to the dashboard by just writing dashboard as url 
-    //and we have used replace so that once logged in by pressing back key we dont go back to login page so we prevent it using replace word
-    //(second comment is implemented in authlayout)
+const DashboardLayout = () => {
+  const { token, setToken } = useTokenStore((state) => state);
+
+  if (token === "") {
+    return <Navigate to={"/auth/login"} replace />;
   }
-  
-  const Logout = () => { 
-    console.log('logged out');
-    settoken("");
-  }
+
+  const logout = () => {
+    console.log("Logging out!");
+    setToken("");
+  };
 
   return (
-    <div>
-      <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
       <div className="hidden border-r bg-muted/40 md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <Link to="/" className="flex items-center gap-2 font-semibold">
               <Package2 className="h-6 w-6" />
-              <span className="">CSI Portal</span>
+              <span className="">CSI</span>
             </Link>
             <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
               <Bell className="h-4 w-4" />
@@ -60,24 +53,30 @@ const DashboardLayouts = () => {
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-              <Link
+              <NavLink
                 to="/dashboard/home"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
+                className={({ isActive }) => {
+                  return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                    isActive && "bg-muted"
+                  }`;
+                }}
               >
                 <Home className="h-4 w-4" />
                 Home
-              </Link>
-              <Link
-                to="/dashboard/agency"
-                className="flex items-center gap-3 rounded-lg bg-muted px-3 py-2 text-primary transition-all hover:text-primary"
+              </NavLink>
+
+              <NavLink
+                to="/dashboard/books"
+                className={({ isActive }) => {
+                  return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                    isActive && "bg-muted"
+                  }`;
+                }}
               >
                 <Package className="h-4 w-4" />
-                Agencies{" "}
-              </Link>
+                Books{" "}
+              </NavLink>
             </nav>
-          </div>
-          <div className="mt-auto p-4">
-            
           </div>
         </div>
       </div>
@@ -108,7 +107,7 @@ const DashboardLayouts = () => {
                   className="mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
-                  Home
+                  Dashboard
                 </Link>
                 <Link
                   to="#"
@@ -142,9 +141,6 @@ const DashboardLayouts = () => {
                   Analytics
                 </Link>
               </nav>
-              <div className="mt-auto">
-                
-              </div>
             </SheetContent>
           </Sheet>
           <div className="w-full flex-1">
@@ -153,7 +149,7 @@ const DashboardLayouts = () => {
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search agencies..."
+                  placeholder="Search products..."
                   className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
                 />
               </div>
@@ -172,18 +168,20 @@ const DashboardLayouts = () => {
               <DropdownMenuItem>Settings</DropdownMenuItem>
               <DropdownMenuItem>Support</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem><Button variant={'link'} onClick={Logout}>Logout</Button></DropdownMenuItem>
+              <DropdownMenuItem>
+                <Button onClick={logout} variant={"link"}>
+                  Logout
+                </Button>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          //dynamic content
-          <Outlet/>
+          <Outlet />
         </main>
       </div>
     </div>
-    </div>
-  )
-}
+  );
+};
 
-export default DashboardLayouts
+export default DashboardLayout;

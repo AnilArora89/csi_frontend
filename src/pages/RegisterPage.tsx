@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { useRef } from "react";
-import { Loader, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 import { register } from "@/http/api";
 
 const RegisterPage = () => {

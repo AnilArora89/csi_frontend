@@ -9,30 +9,24 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { login } from "@/http/api";
+import useTokenStore from "@/store";
+import { useMutation } from "@tanstack/react-query";
+import { LoaderCircle } from "lucide-react";
 import { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { login } from "@/http/api";
-import { Loader } from "lucide-react";
-import useTokenStore from "@/store";
+
 const LoginPage = () => {
   const navigate = useNavigate();
+  const setToken = useTokenStore((state) => state.setToken);
+
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
 
-  const setToken = useTokenStore((state) => state.setToken);
-
-  // to send data to server we use mutation
   const mutation = useMutation({
     mutationFn: login,
     onSuccess: (response) => {
-      console.log("login success");
-      //before login we will need to store token also
-
       setToken(response.data.accessToken);
-
-      //here after a successful login we redirect to home page
-      //in router dom we have a hook called useNavigate
       navigate("/dashboard/home");
     },
   });
@@ -40,8 +34,7 @@ const LoginPage = () => {
   const handleLoginSubmit = () => {
     const email = emailRef.current?.value;
     const password = passwordRef.current?.value;
-
-    //console.log("data", { email, password });
+    console.log("data", { email, password });
 
     if (!email || !password) {
       return alert("Please enter email and password");
@@ -49,17 +42,16 @@ const LoginPage = () => {
 
     mutation.mutate({ email, password });
   };
-
   return (
-    <div className="flex justify-center items-center h-screen">
+    <section className="flex justify-center items-center h-screen">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account <br />
+            Enter your email below to login to your account. <br />
             {mutation.isError && (
-              <span className="text-red-500 text-small">
-                {mutation.error.message}
+              <span className="text-red-500 text-sm">
+                {"Something went wrong"}
               </span>
             )}
           </CardDescription>
@@ -71,7 +63,7 @@ const LoginPage = () => {
               ref={emailRef}
               id="email"
               type="email"
-              placeholder="Enter your Email (e.g., Andrew@gmail.com)"
+              placeholder="m@example.com"
               required
             />
           </div>
@@ -87,20 +79,21 @@ const LoginPage = () => {
               className="w-full"
               disabled={mutation.isPending}
             >
-              {/*added the loading function*/}
-              {mutation.isPending && <Loader className="animate-spin" />}
-              <span>Sign in</span>
+              {mutation.isPending && <LoaderCircle className="animate-spin" />}
+
+              <span className="ml-2">Sign in</span>
             </Button>
+
             <div className="mt-4 text-center text-sm">
               Don't have an account?{" "}
               <Link to={"/auth/register"} className="underline">
-                Sign Up
+                Sign up
               </Link>
             </div>
           </div>
         </CardFooter>
       </Card>
-    </div>
+    </section>
   );
 };
 
