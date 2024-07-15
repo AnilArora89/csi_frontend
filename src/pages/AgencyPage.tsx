@@ -64,10 +64,32 @@ const AgencyPage = () => {
   if (isError) return <div>Error loading data</div>;
 
   const filteredAgency = data?.data.filter((agency: Agency) =>
-    agency.routeNo.toLowerCase().includes(search.toLowerCase())
+    agency.person.toLowerCase().includes(search.toLowerCase())
   );
+  const sortedAgencies = filteredAgency.map((agency: Agency) => {
+    // Check if the agency has lastCalibrationDates and is an array
+    if (
+      agency.lastCalibrationDates &&
+      Array.isArray(agency.lastCalibrationDates)
+    ) {
+      const sortedDates = agency.lastCalibrationDates.sort(
+        (a: Date, b: Date) => {
+          return new Date(b).getTime() - new Date(a).getTime();
+        }
+      );
+      // Return the agency with sorted lastCalibrationDates
+      return {
+        ...agency,
+        lastCalibrationDates: sortedDates,
+        mostRecentDate: sortedDates.length > 0 ? sortedDates[0] : null,
+      };
+    } else {
+      // Return the agency as-is if lastCalibrationDates is not defined or not an array
+      return agency;
+    }
+  });
 
-  console.log(filteredAgency);
+  console.log(sortedAgencies);
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -112,6 +134,7 @@ const AgencyPage = () => {
                 <TableHead className="hidden w-[100px] sm:table-cell">
                   <span className="sr-only">Image</span>
                 </TableHead>
+                <TableHead>Person Name</TableHead>
                 <TableHead>Route No.</TableHead>
                 <TableHead>Agency No.</TableHead>
                 <TableHead className="hidden md:table-cell">
@@ -120,13 +143,19 @@ const AgencyPage = () => {
                 <TableHead className="hidden md:table-cell">
                   Service Report No.
                 </TableHead>
+                <TableHead className="hidden md:table-cell">
+                  Last Calibration Date
+                </TableHead>
+                <TableHead className="hidden md:table-cell">
+                  Due Calibration Date
+                </TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAgency?.map((agency: Agency) => (
+              {sortedAgencies?.map((agency: Agency) => (
                 <TableRow key={agency._id}>
                   <TableCell className="hidden sm:table-cell">
                     <img
@@ -137,6 +166,7 @@ const AgencyPage = () => {
                       width="64"
                     />
                   </TableCell>
+                  <TableCell className="font-medium">{agency.person}</TableCell>
                   <TableCell className="font-medium">
                     {agency.routeNo}
                   </TableCell>
@@ -148,6 +178,21 @@ const AgencyPage = () => {
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {agency.createdAt}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {agency.lastCalibrationDates[0].toString().substring(0, 10)}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    {(() => {
+                      if (agency.lastCalibrationDates[0]) {
+                        const futureDate = new Date(
+                          agency.lastCalibrationDates[0]
+                        );
+                        futureDate.setMonth(futureDate.getMonth() + 6);
+                        return futureDate.toISOString().substring(0, 10);
+                      }
+                      return "";
+                    })()}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>

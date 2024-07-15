@@ -7,4 +7,5 @@ export interface Agency {
     coverImage: string;
     file: string;
     createdAt: string;
+    lastCalibrationDates: Date[]; // Array of date objects
 }

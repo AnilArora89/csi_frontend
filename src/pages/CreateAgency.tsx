@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { createAgency } from "@/http/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
@@ -50,6 +50,12 @@ const formSchema = z.object({
   file: z.instanceof(FileList).refine((file) => {
     return file.length == 1;
   }, "PDF is required"),
+  lastCalibrationDates: z.array(
+    z.string().refine((date) => !isNaN(Date.parse(date)), "Invalid date format")
+  ),
+  person: z.string().min(2, {
+    message: "Person must be at least 2 characters.",
+  }),
 });
 
 const CreateBook = () => {
@@ -59,9 +65,16 @@ const CreateBook = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       routeNo: "",
+      person: "",
       agencyNo: "",
       description: "",
+      lastCalibrationDates: [""],
     },
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control: form.control,
+    name: "lastCalibrationDates",
   });
 
   const coverImageRef = form.register("coverImage");
@@ -89,6 +102,18 @@ const CreateBook = () => {
     formdata.append("description", values.description);
     formdata.append("coverImage", values.coverImage[0]);
     formdata.append("file", values.file[0]);
+    formdata.append("person", values.person);
+    // values.lastCalibrationDates.forEach((date, index) => {
+    //   formdata.append(
+    //     `lastCalibrationDates[${index}]`,
+    //     new Date(date).toISOString()
+    //   );
+    // }); wrong trying
+
+    formdata.append(
+      "lastCalibrationDates",
+      JSON.stringify(values.lastCalibrationDates)
+    );
 
     mutation.mutate(formdata);
   }
@@ -106,7 +131,9 @@ const CreateBook = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/books">Books</BreadcrumbLink>
+                  <BreadcrumbLink href="/dashboard/agency">
+                    Agency
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
@@ -140,6 +167,19 @@ const CreateBook = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
+                <FormField
+                  control={form.control}
+                  name="person"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Person Name</FormLabel>
+                      <FormControl>
+                        <Input type="text" className="w-full" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="routeNo"
@@ -213,6 +253,40 @@ const CreateBook = () => {
                     </FormItem>
                   )}
                 />
+
+                {fields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`lastCalibrationDates.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Calibration Date</FormLabel>
+                        <FormControl>
+                          <Input type="date" className="w-full" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => remove(index)}
+                        >
+                          Remove Date
+                        </Button>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+
+                {fields.length === 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => append("")}
+                  >
+                    Add Date
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
