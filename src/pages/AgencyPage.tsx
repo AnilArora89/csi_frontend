@@ -13,6 +13,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
@@ -63,7 +64,7 @@ const AgencyPage = () => {
   if (isError) return <div>Error loading data</div>;
 
   const filteredAgency = data?.data.filter((agency: Agency) =>
-    agency.title.toLowerCase().includes(search.toLowerCase())
+    agency.routeNo.toLowerCase().includes(search.toLowerCase())
   );
 
   console.log(filteredAgency);
@@ -101,30 +102,49 @@ const AgencyPage = () => {
         <CardHeader>
           <CardTitle>Agency</CardTitle>
           <CardDescription>
-            Manage your Agency and view their sales performance.
+            Manage your Agency and view their performance.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
-            <TableHeader></TableHeader>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="hidden w-[100px] sm:table-cell">
+                  <span className="sr-only">Image</span>
+                </TableHead>
+                <TableHead>Route No.</TableHead>
+                <TableHead>Agency No.</TableHead>
+                <TableHead className="hidden md:table-cell">
+                  Description
+                </TableHead>
+                <TableHead className="hidden md:table-cell">
+                  Service Report No.
+                </TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
             <TableBody>
               {filteredAgency?.map((agency: Agency) => (
                 <TableRow key={agency._id}>
                   <TableCell className="hidden sm:table-cell">
                     <img
-                      alt={agency.title}
+                      alt={agency.routeNo}
                       className="aspect-square rounded-md object-cover"
                       height="64"
                       src={agency.coverImage}
                       width="64"
                     />
                   </TableCell>
-                  <TableCell className="font-medium">{agency.title}</TableCell>
+                  <TableCell className="font-medium">
+                    {agency.routeNo}
+                  </TableCell>
                   <TableCell>
-                    <Badge variant="outline">{agency.genre}</Badge>
+                    <Badge variant="outline">{agency.agencyNo}</Badge>
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {/* author name */}
+                    {agency.description}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {agency.createdAt}

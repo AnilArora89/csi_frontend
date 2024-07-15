@@ -1,9 +1,9 @@
 export interface Agency {
     _id: string;
-    title: string;
+    routeNo: string;
     description: string;
-    genre: string;
-    authorname: string;
+    agencyNo: string;
+    person: string;
     coverImage: string;
     file: string;
     createdAt: string;

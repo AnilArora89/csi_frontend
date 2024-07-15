@@ -35,11 +35,11 @@ import { LoaderCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  title: z.string().min(2, {
-    message: "Title must be at least 2 characters.",
+  routeNo: z.string().min(2, {
+    message: "Route No must be at least 2 characters.",
   }),
-  genre: z.string().min(2, {
-    message: "Genre must be at least 2 characters.",
+  agencyNo: z.string().min(2, {
+    message: "Agency No must be at least 2 characters.",
   }),
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
@@ -49,7 +49,7 @@ const formSchema = z.object({
   }, "Cover Image is required"),
   file: z.instanceof(FileList).refine((file) => {
     return file.length == 1;
-  }, "Book PDF is required"),
+  }, "PDF is required"),
 });
 
 const CreateBook = () => {
@@ -58,8 +58,8 @@ const CreateBook = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      genre: "",
+      routeNo: "",
+      agencyNo: "",
       description: "",
     },
   });
@@ -73,18 +73,19 @@ const CreateBook = () => {
     mutationFn: createAgency,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agency"] });
-      toast.success("Agency created successfully"); // Toast notification
+      toast.success("Agency created successfully");
       navigate("/dashboard/agency");
     },
     onError: (error) => {
-      toast.error(`Failed to create agency: ${error.message}`); // Toast notification on error
+      console.error("Error creating agency:", error);
+      toast.error(`Failed to create agency: ${error.message || error}`);
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     const formdata = new FormData();
-    formdata.append("title", values.title);
-    formdata.append("genre", values.genre);
+    formdata.append("routeNo", values.routeNo);
+    formdata.append("agencyNo", values.agencyNo);
     formdata.append("description", values.description);
     formdata.append("coverImage", values.coverImage[0]);
     formdata.append("file", values.file[0]);
@@ -94,7 +95,7 @@ const CreateBook = () => {
 
   return (
     <section>
-      <ToastContainer /> {/* Toast container */}
+      <ToastContainer />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex items-center justify-between">
@@ -132,19 +133,19 @@ const CreateBook = () => {
           </div>
           <Card className="mt-6">
             <CardHeader>
-              <CardTitle>Create a new book</CardTitle>
+              <CardTitle>Create a new agency</CardTitle>
               <CardDescription>
-                Fill out the form below to create a new book.
+                Fill out the form below to create a new agency.
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid gap-6">
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="routeNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>Route No</FormLabel>
                       <FormControl>
                         <Input type="text" className="w-full" {...field} />
                       </FormControl>
@@ -155,10 +156,10 @@ const CreateBook = () => {
 
                 <FormField
                   control={form.control}
-                  name="genre"
+                  name="agencyNo"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Genre</FormLabel>
+                      <FormLabel>Agency No</FormLabel>
                       <FormControl>
                         <Input type="text" className="w-full" {...field} />
                       </FormControl>
