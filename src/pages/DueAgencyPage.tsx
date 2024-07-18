@@ -17,11 +17,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { deleteAgency, getAgency } from "@/http/api";
+import { getAgency } from "@/http/api";
 import { Agency } from "@/types";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CirclePlus, MoreHorizontal } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { MoreHorizontal } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -38,20 +37,10 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-const AgencyPage = () => {
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const mutation = useMutation({
-    mutationFn: deleteAgency,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["Agency"] });
-      console.log("Agency deleted successfully");
-    },
-    onError: (error) => {
-      console.error("Error deleting Agency:", error.message);
-    },
-  });
+import { useNavigate } from "react-router-dom";
 
+const DueAgencyPage = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["Agency"],
     queryFn: getAgency,
@@ -59,7 +48,6 @@ const AgencyPage = () => {
   });
 
   const [search, setSearch] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading data</div>;
@@ -67,8 +55,8 @@ const AgencyPage = () => {
   const filteredAgency = data?.data.filter((agency: Agency) =>
     agency.person.toLowerCase().includes(search.toLowerCase())
   );
-
   const sortedAgencies = filteredAgency.map((agency: Agency) => {
+    // Check if the agency has lastCalibrationDates and is an array
     if (
       agency.lastCalibrationDates &&
       Array.isArray(agency.lastCalibrationDates)
@@ -78,39 +66,32 @@ const AgencyPage = () => {
           return new Date(b).getTime() - new Date(a).getTime();
         }
       );
+      // Return the agency with sorted lastCalibrationDates
       return {
         ...agency,
         lastCalibrationDates: sortedDates,
         mostRecentDate: sortedDates.length > 0 ? sortedDates[0] : null,
       };
     } else {
+      // Return the agency as-is if lastCalibrationDates is not defined or not an array
       return agency;
     }
   });
-  const filteredByMonthAgencies = selectedMonth
-    ? sortedAgencies.filter((agency: Agency) => {
-        const dueDate = new Date(
-          new Date(agency.mostRecentDate).setMonth(
-            new Date(agency.mostRecentDate).getMonth() + 6
-          )
-        );
-        return dueDate.getMonth() === new Date(selectedMonth).getMonth();
-      })
-    : sortedAgencies;
-
-  const handleDelete = async (id: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this agency?"
-    );
-    if (confirmDelete) {
-      try {
-        await mutation.mutateAsync(id);
-        console.log("Agency deleted successfully");
-      } catch (error) {
-        console.error("Error deleting agency:");
-      }
+  const currentMonth = new Date().getMonth() + 1;
+  const currentYear = new Date().getFullYear();
+  const dueThisMonthAgencies = sortedAgencies.filter((agency) => {
+    if (agency.mostRecentDate) {
+      const futureDate = new Date(agency.mostRecentDate);
+      futureDate.setMonth(futureDate.getMonth() + 6);
+      return (
+        futureDate.getMonth() + 1 === currentMonth &&
+        futureDate.getFullYear() === currentYear
+      );
     }
-  };
+    return false;
+  });
+
+  console.log(sortedAgencies);
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -121,18 +102,16 @@ const AgencyPage = () => {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>Agency</BreadcrumbPage>
+              <BreadcrumbLink href="/dashboard/agencies">Agency</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>DueAgency</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Link to="/dashboard/Agency/create">
-          <Button>
-            <CirclePlus size={20} />
-            <span className="ml-2">Add Agency</span>
-          </Button>
-        </Link>
       </div>
-      <div className="mt-4 flex gap-4">
+      <div className="mt-4">
         <Input
           type="search"
           placeholder="Search Agency..."
@@ -140,23 +119,6 @@ const AgencyPage = () => {
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-1/2"
         />
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-          className="w-full md:w-1/2"
-        >
-          <option value="">Select Month</option>
-          {Array.from({ length: 12 }).map((_, index) => {
-            const month = new Date(0, index).toLocaleString("default", {
-              month: "long",
-            });
-            return (
-              <option key={index} value={index}>
-                {month}
-              </option>
-            );
-          })}
-        </select>
       </div>
       <Card className="mt-6">
         <CardHeader>
@@ -190,7 +152,7 @@ const AgencyPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredByMonthAgencies?.map((agency: Agency) => (
+              {dueThisMonthAgencies?.map((agency: Agency) => (
                 <TableRow key={agency._id}>
                   <TableCell className="font-medium">{agency.person}</TableCell>
                   <TableCell className="font-medium">
@@ -203,7 +165,7 @@ const AgencyPage = () => {
                     {agency.description}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {agency.createdAt}
+                    {agency.serviceNo}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {agency.lastCalibrationDates[0].toString().substring(0, 10)}
@@ -234,18 +196,6 @@ const AgencyPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            navigate(`/dashboard/Agency/edit/${agency._id}`)
-                          }
-                        >
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(agency._id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
                         <DropdownMenuItem>Done</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -257,7 +207,7 @@ const AgencyPage = () => {
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Showing <strong>{filteredByMonthAgencies?.length}</strong> of{" "}
+            Showing <strong>{dueThisMonthAgencies?.length}</strong> of{" "}
             <strong>{data?.data.length}</strong> Agency
           </div>
         </CardFooter>
@@ -266,4 +216,4 @@ const AgencyPage = () => {
   );
 };
 
-export default AgencyPage;
+export default DueAgencyPage;

@@ -1,6 +1,15 @@
 import useTokenStore from "@/store";
 import axios from "axios";
 // make api
+
+export interface Agency {
+    person: string;
+    description: string;
+    routeNo: string;
+    agencyNo: string;
+    lastCalibrationDates: Date[];
+}
+
 const api = axios.create({
     // we will bring this value from env variables
     baseURL: "http://127.0.0.1:5513/",
@@ -44,4 +53,14 @@ export const deleteAgency = async (id: string) => {
         console.error('Error deleting book:', error || "OK");
         throw new Error('Failed to delete book');
     }
+};
+
+export const getAgencyById = async (id: string) => {
+    const response = await axios.get(`/api/agencies/${id}`);
+    return response.data;
+};
+
+export const updateAgency = async (id: string, data: Agency) => {
+    const response = await axios.patch(`/api/agencies/${id}`, data);
+    return response.data;
 };

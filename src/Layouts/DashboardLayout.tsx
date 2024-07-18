@@ -53,7 +53,7 @@ const DashboardLayout = () => {
               </NavLink>
 
               <NavLink
-                to="/dashboard/agency"
+                to="/dashboard/agencies"
                 className={({ isActive }) => {
                   return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
                     isActive && "bg-muted"
@@ -62,6 +62,17 @@ const DashboardLayout = () => {
               >
                 <Package className="h-4 w-4" />
                 Agency{" "}
+              </NavLink>
+              <NavLink
+                to="/dashboard/agencies/due"
+                className={({ isActive }) => {
+                  return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                    isActive && "bg-muted"
+                  }`;
+                }}
+              >
+                <Package className="h-4 w-4" />
+                DueAgency{" "}
               </NavLink>
             </nav>
           </div>
@@ -104,6 +115,18 @@ const DashboardLayout = () => {
                 >
                   <Package className="h-4 w-4" />
                   Agency{" "}
+                </NavLink>
+
+                <NavLink
+                  to="/dashboard/agencies/due"
+                  className={({ isActive }) => {
+                    return `flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${
+                      isActive && "bg-muted"
+                    }`;
+                  }}
+                >
+                  <Package className="h-4 w-4" />
+                  DueAgency{" "}
                 </NavLink>
               </nav>
             </SheetContent>

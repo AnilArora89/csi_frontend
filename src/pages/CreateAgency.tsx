@@ -35,21 +35,32 @@ import { LoaderCircle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  routeNo: z.string().min(2, {
-    message: "Route No must be at least 2 characters.",
-  }),
-  agencyNo: z.string().min(2, {
-    message: "Agency No must be at least 2 characters.",
-  }),
+  routeNo: z
+    .string()
+    .startsWith("R")
+    .min(4, {
+      message: "Agency No must be at least 4 characters.",
+    })
+    .max(4, {
+      message: "Agency No must be at max 4 characters.",
+    }),
+  agencyNo: z
+    .string()
+    .min(4, {
+      message: "Agency No must be at least 4 characters.",
+    })
+    .max(4, {
+      message: "Agency No must be at max 4 characters.",
+    }),
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
-  coverImage: z.instanceof(FileList).refine((file) => {
-    return file.length == 1;
-  }, "Cover Image is required"),
-  file: z.instanceof(FileList).refine((file) => {
-    return file.length == 1;
-  }, "PDF is required"),
+  // coverImage: z.instanceof(FileList).refine((file) => {
+  //   return file.length == 1;
+  // }, "Cover Image is required"),
+  // file: z.instanceof(FileList).refine((file) => {
+  //   return file.length == 1;
+  // }, "PDF is required"),
   lastCalibrationDates: z.array(
     z.string().refine((date) => !isNaN(Date.parse(date)), "Invalid date format")
   ),
@@ -58,7 +69,7 @@ const formSchema = z.object({
   }),
 });
 
-const CreateBook = () => {
+const CreateAgency = () => {
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -77,8 +88,8 @@ const CreateBook = () => {
     name: "lastCalibrationDates",
   });
 
-  const coverImageRef = form.register("coverImage");
-  const fileRef = form.register("file");
+  // const coverImageRef = form.register("coverImage");
+  // const fileRef = form.register("file");
 
   const queryClient = useQueryClient();
 
@@ -87,7 +98,7 @@ const CreateBook = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agency"] });
       toast.success("Agency created successfully");
-      navigate("/dashboard/agency");
+      navigate("/dashboard/agencies");
     },
     onError: (error) => {
       console.error("Error creating agency:", error);
@@ -100,8 +111,8 @@ const CreateBook = () => {
     formdata.append("routeNo", values.routeNo);
     formdata.append("agencyNo", values.agencyNo);
     formdata.append("description", values.description);
-    formdata.append("coverImage", values.coverImage[0]);
-    formdata.append("file", values.file[0]);
+    // formdata.append("coverImage", values.coverImage[0]);
+    //formdata.append("file", values.file[0]);
     formdata.append("person", values.person);
     // values.lastCalibrationDates.forEach((date, index) => {
     //   formdata.append(
@@ -131,7 +142,7 @@ const CreateBook = () => {
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/agency">
+                  <BreadcrumbLink href="/dashboard/agencies">
                     Agency
                   </BreadcrumbLink>
                 </BreadcrumbItem>
@@ -142,7 +153,7 @@ const CreateBook = () => {
               </BreadcrumbList>
             </Breadcrumb>
             <div className="flex items-center gap-4">
-              <Link to="/dashboard/agency">
+              <Link to="/dashboard/agencies">
                 <Button
                   variant={"outline"}
                   onClick={() => toast.info("Cancelled")}
@@ -222,7 +233,7 @@ const CreateBook = () => {
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name="coverImage"
                   render={() => (
@@ -252,7 +263,7 @@ const CreateBook = () => {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
 
                 {fields.map((field, index) => (
                   <FormField
@@ -296,4 +307,4 @@ const CreateBook = () => {
   );
 };
 
-export default CreateBook;
+export default CreateAgency;

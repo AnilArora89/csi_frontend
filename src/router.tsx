@@ -6,6 +6,8 @@ import DashboardLayout from "@/Layouts/DashboardLayout";
 import AuthLayout from "@/Layouts/AuthLayout";
 import AgencyPage from "@/pages/AgencyPage";
 import CreateAgency from "@/pages/CreateAgency";
+import DueAgencyPage from "@/pages/DueAgencyPage";
+import UpdatePage from "@/pages/UpdatePage";
 
 const router = createBrowserRouter([
   {
@@ -21,12 +23,20 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: "agency",
+        path: "agencies",
         element: <AgencyPage />,
+      },
+      {
+        path: "agencies/due",
+        element: <DueAgencyPage />,
       },
       {
         path: "agency/create",
         element: <CreateAgency />,
+      },
+      {
+        path: "agency/edit/:id",
+        element: <UpdatePage />,
       },
     ],
   },
