@@ -38,6 +38,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+
 const AgencyPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -87,14 +88,21 @@ const AgencyPage = () => {
       return agency;
     }
   });
+
   const filteredByMonthAgencies = selectedMonth
     ? sortedAgencies.filter((agency: Agency) => {
-        const dueDate = new Date(
-          new Date(agency.mostRecentDate).setMonth(
-            new Date(agency.mostRecentDate).getMonth() + 6
-          )
-        );
-        return dueDate.getMonth() === new Date(selectedMonth).getMonth();
+        const mostRecentCalibrationDate = agency.lastCalibrationDates[0]
+          ? new Date(agency.lastCalibrationDates[0])
+          : null;
+
+        if (mostRecentCalibrationDate) {
+          const dueDate = new Date(mostRecentCalibrationDate);
+          dueDate.setMonth(dueDate.getMonth() + 6);
+
+          return dueDate.getMonth() === parseInt(selectedMonth, 10);
+        }
+
+        return false;
       })
     : sortedAgencies;
 
@@ -107,10 +115,11 @@ const AgencyPage = () => {
         await mutation.mutateAsync(id);
         console.log("Agency deleted successfully");
       } catch (error) {
-        console.error("Error deleting agency:");
+        console.error("Error deleting agency:", error);
       }
     }
   };
+
   return (
     <div>
       <div className="flex items-center justify-between">
@@ -190,68 +199,83 @@ const AgencyPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredByMonthAgencies?.map((agency: Agency) => (
-                <TableRow key={agency._id}>
-                  <TableCell className="font-medium">{agency.person}</TableCell>
-                  <TableCell className="font-medium">
-                    {agency.routeNo}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline">{agency.agencyNo}</Badge>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {agency.description}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {agency.createdAt}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {agency.lastCalibrationDates[0].toString().substring(0, 10)}
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">
-                    {(() => {
-                      if (agency.lastCalibrationDates[0]) {
-                        const futureDate = new Date(
-                          agency.lastCalibrationDates[0]
-                        );
-                        futureDate.setMonth(futureDate.getMonth() + 6);
-                        return futureDate.toISOString().substring(0, 10);
-                      }
-                      return "";
-                    })()}
-                  </TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                          onClick={() =>
-                            navigate(`/dashboard/Agency/edit/${agency._id}`)
-                          }
-                        >
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDelete(agency._id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                        <DropdownMenuItem>Done</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {filteredByMonthAgencies?.map((agency: Agency) => {
+                return (
+                  <TableRow key={agency._id}>
+                    <TableCell className="font-medium">
+                      {agency.person}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {agency.routeNo}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{agency.agencyNo}</Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {agency.description}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {agency.createdAt}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {agency.lastCalibrationDates[0]
+                        ? new Date(agency.lastCalibrationDates[0])
+                            .toISOString()
+                            .substring(0, 10)
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      {agency.lastCalibrationDates[0]
+                        ? new Date(
+                            new Date(agency.lastCalibrationDates[0]).setMonth(
+                              new Date(
+                                agency.lastCalibrationDates[0]
+                              ).getMonth() + 6
+                            )
+                          )
+                            .toISOString()
+                            .substring(0, 10)
+                        : "N/A"}
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              navigate(`/dashboard/agency/edit/${agency._id}`)
+                            }
+                          >
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(agency._id)}
+                          >
+                            Delete
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() =>
+                              navigate(`/dashboard/agency/done/${agency._id}`)
+                            }
+                          >
+                            Done
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </CardContent>

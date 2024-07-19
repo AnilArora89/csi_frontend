@@ -50,17 +50,37 @@ export const deleteAgency = async (id: string) => {
         const response = await api.delete(`/api/agency/${id}`);
         return response.data; // Adjust this based on your response structure
     } catch (error) {
-        console.error('Error deleting book:', error || "OK");
-        throw new Error('Failed to delete book');
+        console.error('Error deleting agency:', error || "OK");
+        throw new Error('Failed to delete agency');
     }
 };
 
-export const getAgencyById = async (id: string) => {
-    const response = await axios.get(`/api/agencies/${id}`);
+export const updateAgency = async (id: string, data: Partial<Agency>) => {
+    try {
+        const response = await api.patch(`/api/agency/${id}`, data); // Include data in the patch request
+        return response.data; // Adjust this based on your response structure
+    } catch (error) {
+        console.error('Error updating agency:', error || "OK");
+        throw new Error('Failed to update agency');
+    }
+};
+
+export const updateAgencyServiceReport = async (data: {
+    id: string;
+    serviceReports: Array<{ serviceReportNo: string; date: string; description: string }>;
+    calibrationDates: Array<string>;
+}) => {
+    const response = await axios.put(`/api/agency/${data.id}`, {
+        serviceReports: data.serviceReports,
+        calibrationDates: data.calibrationDates,
+    });
     return response.data;
 };
 
-export const updateAgency = async (id: string, data: Agency) => {
-    const response = await axios.patch(`/api/agencies/${id}`, data);
-    return response.data;
+export const getAgencyById = (id: string) => {
+    return api.get(`/api/agency/${id}`).then((response) => response.data);
 };
+
+// export const updateAgency = ({ id, ...data }) => {
+//     return api.put(`/api/agency/${id}`, data).then((response) => response.data);
+// };

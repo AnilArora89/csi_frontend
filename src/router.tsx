@@ -8,6 +8,7 @@ import AgencyPage from "@/pages/AgencyPage";
 import CreateAgency from "@/pages/CreateAgency";
 import DueAgencyPage from "@/pages/DueAgencyPage";
 import UpdatePage from "@/pages/UpdatePage";
+import DonePage from "@/pages/DonePage";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
       {
         path: "agency/edit/:id",
         element: <UpdatePage />,
+      },
+      {
+        path: "agency/done/:id",
+        element: <DonePage />,
       },
     ],
   },
