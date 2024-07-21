@@ -37,10 +37,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-
 const DueAgencyPage = () => {
-  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["Agency"],
     queryFn: getAgency,
@@ -79,7 +76,7 @@ const DueAgencyPage = () => {
   });
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
-  const dueThisMonthAgencies = sortedAgencies.filter((agency) => {
+  const dueThisMonthAgencies = sortedAgencies.filter((agency: agency) => {
     if (agency.mostRecentDate) {
       const futureDate = new Date(agency.mostRecentDate);
       futureDate.setMonth(futureDate.getMonth() + 6);
@@ -165,7 +162,7 @@ const DueAgencyPage = () => {
                     {agency.description}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    {agency.serviceNo}
+                    {agency.serviceReportNo || "N/A"}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     {agency.lastCalibrationDates[0].toString().substring(0, 10)}

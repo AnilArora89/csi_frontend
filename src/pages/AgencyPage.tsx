@@ -39,6 +39,16 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 
+// Helper function to format dates
+const formatDate = (date: string | Date | null): string => {
+  if (!date) return "N/A";
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, "0");
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const year = d.getFullYear();
+  return `${day}-${month}-${year}`;
+};
+
 const AgencyPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -106,6 +116,14 @@ const AgencyPage = () => {
       })
     : sortedAgencies;
 
+  // Function to get the service report number at the last index
+  const getLastServiceReportNo = (serviceReportNo: string[]): string | null => {
+    if (Array.isArray(serviceReportNo) && serviceReportNo.length > 0) {
+      return serviceReportNo[serviceReportNo.length - 1];
+    }
+    return null;
+  };
+
   const handleDelete = async (id: string) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this agency?"
@@ -134,7 +152,7 @@ const AgencyPage = () => {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-        <Link to="/dashboard/Agency/create">
+        <Link to="/dashboard/agency/create">
           <Button>
             <CirclePlus size={20} />
             <span className="ml-2">Add Agency</span>
@@ -178,19 +196,19 @@ const AgencyPage = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Person Name</TableHead>
-                <TableHead>Route No.</TableHead>
-                <TableHead>Agency No.</TableHead>
-                <TableHead className="hidden md:table-cell">
+                <TableHead className="text-center">Person Name</TableHead>
+                <TableHead className="text-center">Route No.</TableHead>
+                <TableHead className="text-center">Agency No.</TableHead>
+                <TableHead className="text-center hidden md:table-cell">
                   Description
                 </TableHead>
-                <TableHead className="hidden md:table-cell">
+                <TableHead className="text-center hidden md:table-cell">
                   Service Report No.
                 </TableHead>
-                <TableHead className="hidden md:table-cell">
+                <TableHead className="text-center hidden md:table-cell">
                   Last Calibration Date
                 </TableHead>
-                <TableHead className="hidden md:table-cell">
+                <TableHead className="text-center hidden md:table-cell">
                   Due Calibration Date
                 </TableHead>
                 <TableHead>
@@ -199,83 +217,79 @@ const AgencyPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredByMonthAgencies?.map((agency: Agency) => {
-                return (
-                  <TableRow key={agency._id}>
-                    <TableCell className="font-medium">
-                      {agency.person}
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      {agency.routeNo}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{agency.agencyNo}</Badge>
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {agency.description}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {agency.createdAt}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {agency.lastCalibrationDates[0]
-                        ? new Date(agency.lastCalibrationDates[0])
-                            .toISOString()
-                            .substring(0, 10)
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      {agency.lastCalibrationDates[0]
-                        ? new Date(
+              {filteredByMonthAgencies?.map((agency: Agency) => (
+                <TableRow key={agency._id}>
+                  <TableCell className="text-center font-medium">
+                    {agency.person}
+                  </TableCell>
+                  <TableCell className="text-center font-medium">
+                    {agency.routeNo}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Badge variant="outline">{agency.agencyNo}</Badge>
+                  </TableCell>
+                  <TableCell className="text-center hidden md:table-cell">
+                    {agency.description}
+                  </TableCell>
+                  <TableCell className="text-center hidden md:table-cell">
+                    {getLastServiceReportNo(agency.serviceReportNo) || "N/A"}
+                  </TableCell>
+                  <TableCell className="text-center hidden md:table-cell">
+                    {agency.lastCalibrationDates[0]
+                      ? formatDate(agency.lastCalibrationDates[0])
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell className="text-center hidden md:table-cell">
+                    {agency.lastCalibrationDates[0]
+                      ? formatDate(
+                          new Date(
                             new Date(agency.lastCalibrationDates[0]).setMonth(
                               new Date(
                                 agency.lastCalibrationDates[0]
                               ).getMonth() + 6
                             )
                           )
-                            .toISOString()
-                            .substring(0, 10)
-                        : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/dashboard/agency/edit/${agency._id}`)
-                            }
-                          >
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => handleDelete(agency._id)}
-                          >
-                            Delete
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() =>
-                              navigate(`/dashboard/agency/done/${agency._id}`)
-                            }
-                          >
-                            Done
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                        )
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          aria-haspopup="true"
+                          size="icon"
+                          variant="ghost"
+                        >
+                          <MoreHorizontal className="h-4 w-4" />
+                          <span className="sr-only">Toggle menu</span>
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate(`/dashboard/agency/edit/${agency._id}`)
+                          }
+                        >
+                          Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDelete(agency._id)}
+                        >
+                          Delete
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() =>
+                            navigate(`/dashboard/agency/done/${agency._id}`)
+                          }
+                        >
+                          Done
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </CardContent>

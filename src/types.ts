@@ -3,6 +3,7 @@ export interface Agency {
     routeNo: string;
     description: string;
     agencyNo: string;
+    serviceReportNo: string[];
     person: string;
     coverImage: string;
     file: string;

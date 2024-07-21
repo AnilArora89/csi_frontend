@@ -39,10 +39,10 @@ const formSchema = z.object({
     .string()
     .startsWith("R")
     .min(4, {
-      message: "Agency No must be at least 4 characters.",
+      message: "Route No must be at least 4 characters.",
     })
     .max(4, {
-      message: "Agency No must be at max 4 characters.",
+      message: "Route No must be at max 4 characters.",
     }),
   agencyNo: z
     .string()
@@ -55,12 +55,9 @@ const formSchema = z.object({
   description: z.string().min(2, {
     message: "Description must be at least 2 characters.",
   }),
-  // coverImage: z.instanceof(FileList).refine((file) => {
-  //   return file.length == 1;
-  // }, "Cover Image is required"),
-  // file: z.instanceof(FileList).refine((file) => {
-  //   return file.length == 1;
-  // }, "PDF is required"),
+  serviceReportNo: z.array(
+    z.string().min(1, { message: "Service Report No is required" })
+  ),
   lastCalibrationDates: z.array(
     z.string().refine((date) => !isNaN(Date.parse(date)), "Invalid date format")
   ),
@@ -78,18 +75,29 @@ const CreateAgency = () => {
       routeNo: "",
       person: "",
       agencyNo: "",
+      serviceReportNo: [""],
       description: "",
       lastCalibrationDates: [""],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields: dateFields,
+    append: appendDate,
+    remove: removeDate,
+  } = useFieldArray({
     control: form.control,
     name: "lastCalibrationDates",
   });
 
-  // const coverImageRef = form.register("coverImage");
-  // const fileRef = form.register("file");
+  const {
+    fields: reportFields,
+    append: appendReport,
+    remove: removeReport,
+  } = useFieldArray({
+    control: form.control,
+    name: "serviceReportNo",
+  });
 
   const queryClient = useQueryClient();
 
@@ -112,19 +120,17 @@ const CreateAgency = () => {
     formdata.append("agencyNo", values.agencyNo);
     formdata.append("description", values.description);
     // formdata.append("coverImage", values.coverImage[0]);
-    //formdata.append("file", values.file[0]);
+    // formdata.append("file", values.file[0]);
     formdata.append("person", values.person);
-    // values.lastCalibrationDates.forEach((date, index) => {
-    //   formdata.append(
-    //     `lastCalibrationDates[${index}]`,
-    //     new Date(date).toISOString()
-    //   );
-    // }); wrong trying
 
+    // Handle lastCalibrationDates
     formdata.append(
       "lastCalibrationDates",
       JSON.stringify(values.lastCalibrationDates)
     );
+
+    // Handle serviceReportNo
+    formdata.append("serviceReportNo", JSON.stringify(values.serviceReportNo));
 
     mutation.mutate(formdata);
   }
@@ -265,7 +271,7 @@ const CreateAgency = () => {
                   )}
                 /> */}
 
-                {fields.map((field, index) => (
+                {dateFields.map((field, index) => (
                   <FormField
                     key={field.id}
                     control={form.control}
@@ -280,7 +286,7 @@ const CreateAgency = () => {
                         <Button
                           type="button"
                           variant="destructive"
-                          onClick={() => remove(index)}
+                          onClick={() => removeDate(index)}
                         >
                           Remove Date
                         </Button>
@@ -289,13 +295,47 @@ const CreateAgency = () => {
                   />
                 ))}
 
-                {fields.length === 0 && (
+                {dateFields.length === 0 && (
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => append("")}
+                    onClick={() => appendDate("")}
                   >
                     Add Date
+                  </Button>
+                )}
+
+                {reportFields.map((field, index) => (
+                  <FormField
+                    key={field.id}
+                    control={form.control}
+                    name={`serviceReportNo.${index}`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Service Report No</FormLabel>
+                        <FormControl>
+                          <Input type="text" className="w-full" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => removeReport(index)}
+                        >
+                          Remove Report
+                        </Button>
+                      </FormItem>
+                    )}
+                  />
+                ))}
+
+                {reportFields.length === 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => appendReport("")}
+                  >
+                    Add Report
                   </Button>
                 )}
               </div>

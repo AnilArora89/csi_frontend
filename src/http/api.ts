@@ -31,7 +31,7 @@ export const login = async (data: { email: string, password: string }) => {
     return api.post('/api/users/login', data);
 }
 
-export const register = async (data: { name: string, email: string, password: string }) => {
+export const register = async (data: { name: string, email: string, password: string, role: string }) => {
     return api.post('/api/users/register', data)
 }
 
@@ -80,6 +80,40 @@ export const updateAgencyServiceReport = async (data: {
 export const getAgencyById = (id: string) => {
     return api.get(`/api/agency/${id}`).then((response) => response.data);
 };
+
+export const doneAgency = async (payload: {
+    id: string;
+    serviceReports: string[];
+    calibrationDates: string[];
+    description: string;
+}) => {
+    const response = await axios.patch(`/api/agencies/${payload.id}`, payload);
+    return response.data;
+};
+// Assuming you have a function like this in your `api.ts` file
+export const doneeAgency = async (payload: {
+    id: string;
+    serviceReports: string[];
+    calibrationDates: string[];
+    description: string;
+}) => {
+    const response = await fetch(`/api/agency/${payload.id}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            serviceReports: payload.serviceReports,
+            calibrationDates: payload.calibrationDates,
+            description: payload.description,
+        }),
+    });
+    if (!response.ok) {
+        throw new Error('Error updating agency');
+    }
+    return response.json();
+};
+
 
 // export const updateAgency = ({ id, ...data }) => {
 //     return api.put(`/api/agency/${id}`, data).then((response) => response.data);

@@ -8,7 +8,7 @@ import AgencyPage from "@/pages/AgencyPage";
 import CreateAgency from "@/pages/CreateAgency";
 import DueAgencyPage from "@/pages/DueAgencyPage";
 import UpdatePage from "@/pages/UpdatePage";
-import DonePage from "@/pages/DonePage";
+import DonePage from "./pages/DonePage";
 
 const router = createBrowserRouter([
   {
