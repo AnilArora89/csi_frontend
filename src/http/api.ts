@@ -27,7 +27,7 @@ api.interceptors.request.use((config) => {
     return config;
 });
 
-export const login = async (data: { email: string, password: string }) => {
+export const login = async (data: { email: string, password: string, role: string }) => {
     return api.post('/api/users/login', data);
 }
 
@@ -113,7 +113,20 @@ export const doneeAgency = async (payload: {
     }
     return response.json();
 };
+interface SaveAgencyData {
+    lastCalibrationDates: string[]; // ISO strings
+    serviceReportNo: string[];
+}
 
+export const saveAgency = async (data: SaveAgencyData) => {
+    try {
+        const response = await axios.post('/api/agency/done', data); // Adjust URL to match your backend endpoint
+        return response.data;
+    } catch (error) {
+        console.error("Error saving agency data:", error);
+        throw error;
+    }
+};
 
 // export const updateAgency = ({ id, ...data }) => {
 //     return api.put(`/api/agency/${id}`, data).then((response) => response.data);

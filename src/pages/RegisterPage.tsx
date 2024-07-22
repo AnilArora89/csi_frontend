@@ -13,6 +13,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { register } from "@/http/api";
+import csiLogo from "../assets/dd.jpg";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -43,14 +44,19 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Card className="w-full max-w-sm">
+    <section className="flex flex-col justify-center items-center h-screen bg-gray-50">
+      <div className="flex flex-col items-center mb-10">
+        <img src={csiLogo} alt="CSI Logo" className="w-32 h-auto" />
+      </div>
+      <Card className="w-full max-w-sm border border-gray-300 shadow-lg rounded-lg p-6">
         <CardHeader>
-          <CardTitle className="text-xl">Sign Up</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-3xl font-bold text-center text-blue-600">
+            Welcome to <span className="text-green-600">Sahayak</span>
+          </CardTitle>
+          <CardDescription className="text-center mt-2">
             Enter your information to create an account <br />
             {mutation.isError && (
-              <span className="text-red-500 text-small">
+              <span className="text-red-500 text-sm">
                 {mutation.error.message}
               </span>
             )}
@@ -80,7 +86,7 @@ const RegisterPage = () => {
               <Label htmlFor="role">Role</Label>
               <select
                 id="role"
-                className="border rounded px-2 py-1"
+                className="border border-gray-300 rounded px-2 py-1"
                 value={selectedRole}
                 onChange={(e) => setSelectedRole(e.target.value)}
               >
@@ -105,7 +111,7 @@ const RegisterPage = () => {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </section>
   );
 };
 

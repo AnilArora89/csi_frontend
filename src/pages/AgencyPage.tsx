@@ -264,9 +264,13 @@ const AgencyPage = () => {
                           <span className="sr-only">Toggle menu</span>
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent
+                        align="end"
+                        className=" text-center flex-row"
+                      >
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
+                          className="cursor-pointer hover:scale-110 text-center"
                           onClick={() =>
                             navigate(`/dashboard/agency/edit/${agency._id}`)
                           }
@@ -274,11 +278,13 @@ const AgencyPage = () => {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          className="cursor-pointer hover:scale-110 text-center"
                           onClick={() => handleDelete(agency._id)}
                         >
                           Delete
                         </DropdownMenuItem>
                         <DropdownMenuItem
+                          className="cursor-pointer hover:scale-110 text-center"
                           onClick={() =>
                             navigate(`/dashboard/agency/done/${agency._id}`)
                           }

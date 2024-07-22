@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getAgencyById, doneeAgency } from "@/http/api";
+import { getAgencyById, saveAgency } from "@/http/api";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,7 +29,7 @@ const DonePage = () => {
   });
 
   const mutation = useMutation({
-    mutationFn: doneeAgency,
+    mutationFn: saveAgency,
     onSuccess: () => {
       navigate("/dashboard/agency");
     },
