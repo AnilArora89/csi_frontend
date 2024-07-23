@@ -66,24 +66,34 @@ export const updateAgency = async (id: string, data: Partial<Agency>) => {
     }
 };
 
+export const saveAgency = async (id: string, data: Partial<Agency>) => {
+    try {
+        const response = await api.put(`/api/agency/${id}`, data); // Include data in the patch request
+        return response.data; // Adjust this based on your response structure
+    } catch (error) {
+        console.error('Error updating agency:', error || "OK");
+        throw new Error('Failed to update agency');
+    }
+};
+
 export const getAgencyById = (id: string) => {
     return api.get(`/api/agency/${id}`).then((response) => response.data);
 };
 
 
-export const saveAgency = async (id: string, data: FormData) => {
-    try {
-        const response = await api.put(`/api/agency/done/${id}`, data, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
-        return response.data;
-    } catch (error) {
-        console.error("Error saving agency:", error);
-        throw error;
-    }
-};
+// export const saveAgency = async (id: string, data: FormData) => {
+//     try {
+//         const response = await api.put(`/api/agency/done/${id}`, data, {
+//             headers: {
+//                 'Content-Type': 'multipart/form-data',
+//             },
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error saving agency:", error);
+//         throw error;
+//     }
+// };
 
 // export const updateAgency = ({ id, ...data }) => {
 //     return api.put(`/api/agency/${id}`, data).then((response) => response.data);

@@ -30,7 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm, useFieldArray } from "react-hook-form";
-import { updateAgency, getAgencyById } from "@/http/api";
+import { updateAgency, getAgencyById, saveAgency } from "@/http/api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -100,7 +100,7 @@ const DonePage = () => {
   }, [agencyData, form]);
 
   const mutation = useMutation({
-    mutationFn: (data) => updateAgency(id, data),
+    mutationFn: (data) => saveAgency(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["agency", id] });
       toast.success("Agency updated successfully");
