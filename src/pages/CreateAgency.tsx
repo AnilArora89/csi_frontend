@@ -119,19 +119,14 @@ const CreateAgency = () => {
     formdata.append("routeNo", values.routeNo);
     formdata.append("agencyNo", values.agencyNo);
     formdata.append("description", values.description);
-    // formdata.append("coverImage", values.coverImage[0]);
-    // formdata.append("file", values.file[0]);
     formdata.append("person", values.person);
-
-    // Handle lastCalibrationDates
     formdata.append(
       "lastCalibrationDates",
       JSON.stringify(values.lastCalibrationDates)
     );
-
-    // Handle serviceReportNo
     formdata.append("serviceReportNo", JSON.stringify(values.serviceReportNo));
 
+    console.log([...formdata]); // Log FormData entries for debugging
     mutation.mutate(formdata);
   }
 

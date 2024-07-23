@@ -7,6 +7,7 @@ export interface Agency {
     description: string;
     routeNo: string;
     agencyNo: string;
+    serviceReportNo: string[];
     lastCalibrationDates: Date[];
 }
 
@@ -69,15 +70,7 @@ export const getAgencyById = (id: string) => {
     return api.get(`/api/agency/${id}`).then((response) => response.data);
 };
 
-// export const saveAgency = async (agencyId: string, data: any) => {
-//     try {
-//         const response = await api.put(`/api/agency/${agencyId}`, data);
-//         return response.data; // Adjust based on your response structure
-//     } catch (error) {
-//         console.error('Error saving agency:', error);
-//         throw new Error('Failed to save agency');
-//     }
-// };
+
 export const saveAgency = async (id: string, data: FormData) => {
     try {
         const response = await api.put(`/api/agency/done/${id}`, data, {
