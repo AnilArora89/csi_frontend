@@ -37,7 +37,9 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 const DueAgencyPage = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError } = useQuery({
     queryKey: ["Agency"],
     queryFn: getAgency,
@@ -193,7 +195,14 @@ const DueAgencyPage = () => {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>Done</DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="cursor-pointer hover:scale-110 text-center"
+                          onClick={() =>
+                            navigate(`/dashboard/agency/done/${agency._id}`)
+                          }
+                        >
+                          Done
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
