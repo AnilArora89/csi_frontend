@@ -71,6 +71,7 @@ const AgencyPage = () => {
 
   const [search, setSearch] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Error loading data</div>;
@@ -104,17 +105,38 @@ const AgencyPage = () => {
         const mostRecentCalibrationDate = agency.lastCalibrationDates[0]
           ? new Date(agency.lastCalibrationDates[0])
           : null;
+        const dueDate = mostRecentCalibrationDate
+          ? new Date(
+              new Date(mostRecentCalibrationDate).setMonth(
+                new Date(mostRecentCalibrationDate).getMonth() + 6
+              )
+            )
+          : null;
 
-        if (mostRecentCalibrationDate) {
-          const dueDate = new Date(mostRecentCalibrationDate);
-          dueDate.setMonth(dueDate.getMonth() + 6);
-
-          return dueDate.getMonth() === parseInt(selectedMonth, 10);
+        if (mostRecentCalibrationDate && dueDate) {
+          return (
+            mostRecentCalibrationDate.getMonth() ===
+              parseInt(selectedMonth, 10) ||
+            dueDate.getMonth() === parseInt(selectedMonth, 10)
+          );
         }
 
         return false;
       })
     : sortedAgencies;
+
+  const filteredByYearAgencies = selectedYear
+    ? filteredByMonthAgencies.filter((agency: Agency) => {
+        const mostRecentCalibrationDate = agency.lastCalibrationDates[0]
+          ? new Date(agency.lastCalibrationDates[0])
+          : null;
+
+        return (
+          mostRecentCalibrationDate &&
+          mostRecentCalibrationDate.getFullYear() === parseInt(selectedYear, 10)
+        );
+      })
+    : filteredByMonthAgencies;
 
   // Function to get the service report number at the last index
   const getLastServiceReportNo = (serviceReportNo: string[]): string | null => {
@@ -162,15 +184,37 @@ const AgencyPage = () => {
       <div className="mt-4 flex gap-4">
         <Input
           type="search"
-          placeholder="Search Agency..."
+          placeholder="Search Person Name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full md:w-1/2"
+          className="w-full md:w-1/3"
         />
+        <select
+          value={selectedYear}
+          onChange={(e) => setSelectedYear(e.target.value)}
+          className="w-full md:w-1/3"
+        >
+          <option value="">Select Year</option>
+          {Array.from(
+            new Set(
+              sortedAgencies
+                .map((agency) =>
+                  agency.lastCalibrationDates[0]
+                    ? new Date(agency.lastCalibrationDates[0]).getFullYear()
+                    : null
+                )
+                .filter((year) => year !== null)
+            )
+          ).map((year, index) => (
+            <option key={index} value={year}>
+              {year}
+            </option>
+          ))}
+        </select>
         <select
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
-          className="w-full md:w-1/2"
+          className="w-full md:w-1/3"
         >
           <option value="">Select Month</option>
           {Array.from({ length: 12 }).map((_, index) => {
@@ -217,7 +261,7 @@ const AgencyPage = () => {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredByMonthAgencies?.map((agency: Agency) => (
+              {filteredByYearAgencies?.map((agency: Agency) => (
                 <TableRow key={agency._id}>
                   <TableCell className="text-center font-medium">
                     {agency.person}
@@ -301,7 +345,7 @@ const AgencyPage = () => {
         </CardContent>
         <CardFooter>
           <div className="text-xs text-muted-foreground">
-            Showing <strong>{filteredByMonthAgencies?.length}</strong> of{" "}
+            Showing <strong>{filteredByYearAgencies?.length}</strong> of{" "}
             <strong>{data?.data.length}</strong> Agency
           </div>
         </CardFooter>

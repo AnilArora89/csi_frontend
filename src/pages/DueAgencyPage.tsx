@@ -113,7 +113,7 @@ const DueAgencyPage = () => {
       <div className="mt-4">
         <Input
           type="search"
-          placeholder="Search Agency..."
+          placeholder="Search Person Name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full md:w-1/2"
